@@ -1,0 +1,16 @@
+@Phrase_Api_HostAddress = http://localhost:5113
+
+### Health Check
+
+GET {{Phrase_Api_HostAddress}}/health
+Accept: application/json
+
+### Phrases
+
+POST {{Phrase_Api_HostAddress}}/api/phrases
+Content-Type: application/json
+
+{
+    "text": "Hello, world!"
+}
+

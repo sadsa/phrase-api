@@ -1,0 +1,41 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: PhraseApi.Api/Dockerfile
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=db;Database=phrases;Username=phrases_user;Password=phrases_password
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - phrases-network
+
+  db:
+    image: postgres:16.2
+    environment:
+      - POSTGRES_DB=phrases
+      - POSTGRES_USER=phrases_user
+      - POSTGRES_PASSWORD=phrases_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - phrases-db-data:/var/lib/postgresql/data
+    networks:
+      - phrases-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U phrases_user -d phrases"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  phrases-db-data:
+
+networks:
+  phrases-network:
+    driver: bridge
